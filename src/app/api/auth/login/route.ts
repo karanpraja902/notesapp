@@ -32,7 +32,6 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
-
     const tenant = await getTenantById(user.tenantId);
     if (!tenant) {
       return NextResponse.json(
@@ -42,7 +41,7 @@ export async function POST(request: NextRequest) {
     }
 
     const token = generateToken({
-      userId: user._id.toString(),
+      userId: user._id as string,
       email: user.email,
       role: user.role,
       tenantId: user.tenantId.toString(),
@@ -52,8 +51,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       token,
       user: {
-        id: user._id.toString(),
+        id: user._id as string,
         email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
         role: user.role,
         tenantId: user.tenantId.toString(),
         tenantSlug: tenant.slug

@@ -1,18 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthFromRequest } from '@/lib/auth';
-import { getNotesByTenantId, createNote, getTenantById, getNoteCountByTenant } from '@/lib/db';
+import { requireAuth, canManageNotes } from '@/lib/rbac';
+import { getNotesByUserId, createNote, getTenantById, getNoteCountByUser } from '@/lib/db';
 import { initializeDatabase } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   try {
     await initializeDatabase();
     
-    const auth = getAuthFromRequest(request);
+    const { auth, response } = requireAuth(request);
     if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return response!;
     }
 
-    const notes = await getNotesByTenantId(auth.tenantId);
+    if (!canManageNotes(auth)) {
+      return NextResponse.json({ error: 'Forbidden. Insufficient permissions.' }, { status: 403 });
+    }
+
+    const notes = await getNotesByUserId(auth.userId, auth.tenantId);
     return NextResponse.json({ notes });
   } catch (error) {
     console.error('Error fetching notes:', error);
@@ -27,9 +31,13 @@ export async function POST(request: NextRequest) {
   try {
     await initializeDatabase();
     
-    const auth = getAuthFromRequest(request);
+    const { auth, response } = requireAuth(request);
     if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return response!;
+    }
+
+    if (!canManageNotes(auth)) {
+      return NextResponse.json({ error: 'Forbidden. Insufficient permissions.' }, { status: 403 });
     }
 
     const { title, content } = await request.json();
@@ -48,7 +56,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (tenant.plan === 'free') {
-      const noteCount = await getNoteCountByTenant(auth.tenantId);
+      const noteCount = await getNoteCountByUser(auth.userId, auth.tenantId);
       if (noteCount >= tenant.noteLimit) {
         return NextResponse.json(
           { 

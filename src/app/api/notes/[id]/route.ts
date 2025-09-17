@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthFromRequest } from '@/lib/auth';
+import { requireAuth, canManageNotes } from '@/lib/rbac';
 import { getNoteById, updateNote, deleteNote } from '@/lib/db';
 import { initializeDatabase } from '@/lib/db';
 
@@ -10,12 +10,16 @@ export async function GET(
   try {
     await initializeDatabase();
     
-    const auth = getAuthFromRequest(request);
+    const { auth, response } = requireAuth(request);
     if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return response!;
     }
 
-    const note = await getNoteById(params.id, auth.tenantId);
+    if (!canManageNotes(auth)) {
+      return NextResponse.json({ error: 'Forbidden. Insufficient permissions.' }, { status: 403 });
+    }
+
+    const note = await getNoteById(params.id, auth.tenantId, auth.userId);
     if (!note) {
       return NextResponse.json({ error: 'Note not found' }, { status: 404 });
     }
@@ -37,9 +41,13 @@ export async function PUT(
   try {
     await initializeDatabase();
     
-    const auth = getAuthFromRequest(request);
+    const { auth, response } = requireAuth(request);
     if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return response!;
+    }
+
+    if (!canManageNotes(auth)) {
+      return NextResponse.json({ error: 'Forbidden. Insufficient permissions.' }, { status: 403 });
     }
 
     const { title, content } = await request.json();
@@ -51,7 +59,7 @@ export async function PUT(
       );
     }
 
-    const updatedNote = await updateNote(params.id, auth.tenantId, { title, content });
+    const updatedNote = await updateNote(params.id, auth.tenantId, { title, content }, auth.userId);
     if (!updatedNote) {
       return NextResponse.json({ error: 'Note not found' }, { status: 404 });
     }
@@ -73,12 +81,16 @@ export async function DELETE(
   try {
     await initializeDatabase();
     
-    const auth = getAuthFromRequest(request);
+    const { auth, response } = requireAuth(request);
     if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return response!;
     }
 
-    const success = await deleteNote(params.id, auth.tenantId);
+    if (!canManageNotes(auth)) {
+      return NextResponse.json({ error: 'Forbidden. Insufficient permissions.' }, { status: 403 });
+    }
+
+    const success = await deleteNote(params.id, auth.tenantId, auth.userId);
     if (!success) {
       return NextResponse.json({ error: 'Note not found' }, { status: 404 });
     }

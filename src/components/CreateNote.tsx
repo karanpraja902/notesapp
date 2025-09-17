@@ -5,9 +5,12 @@ import { useState } from 'react';
 interface CreateNoteProps {
   onNoteCreated: () => void;
   onLimitReached: () => void;
+  currentNoteCount?: number;
+  noteLimit?: number;
+  isProPlan?: boolean;
 }
 
-export default function CreateNote({ onNoteCreated, onLimitReached }: CreateNoteProps) {
+export default function CreateNote({ onNoteCreated, onLimitReached, currentNoteCount = 0, noteLimit = 3, isProPlan = false }: CreateNoteProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
@@ -48,9 +51,18 @@ export default function CreateNote({ onNoteCreated, onLimitReached }: CreateNote
     }
   };
 
+  const isAtLimit = !isProPlan && currentNoteCount >= noteLimit;
+
   return (
     <div className="bg-white shadow-md rounded-lg p-6">
-      <h2 className="text-lg font-semibold mb-4">Create New Note</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-semibold">Create New Note</h2>
+        {!isProPlan && (
+          <div className="text-sm text-gray-600">
+            {currentNoteCount} / {noteLimit} notes
+          </div>
+        )}
+      </div>
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
@@ -79,10 +91,14 @@ export default function CreateNote({ onNoteCreated, onLimitReached }: CreateNote
         </div>
         <button
           type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50"
+          disabled={loading || isAtLimit}
+          className={`w-full py-2 px-4 rounded-md font-medium ${
+            isAtLimit
+              ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+              : 'bg-blue-600 text-white hover:bg-blue-700'
+          } disabled:opacity-50`}
         >
-          {loading ? 'Creating...' : 'Create Note'}
+          {loading ? 'Creating...' : isAtLimit ? 'Note Limit Reached' : 'Create Note'}
         </button>
       </form>
     </div>

@@ -88,9 +88,20 @@ export const getNotesByTenantId = async (tenantId: string): Promise<INote[]> => 
     .sort({ createdAt: -1 });
 };
 
-export const getNoteById = async (id: string, tenantId: string): Promise<INote | null> => {
+export const getNotesByUserId = async (userId: string, tenantId: string): Promise<INote[]> => {
   await connectDB();
-  return await Note.findOne({ _id: id, tenantId }).populate('userId', 'email');
+  return await Note.find({ userId, tenantId })
+    .populate('userId', 'email')
+    .sort({ createdAt: -1 });
+};
+
+export const getNoteById = async (id: string, tenantId: string, userId?: string): Promise<INote | null> => {
+  await connectDB();
+  const query: any = { _id: id, tenantId };
+  if (userId) {
+    query.userId = userId;
+  }
+  return await Note.findOne(query).populate('userId', 'email');
 };
 
 export const createNote = async (noteData: {
@@ -107,19 +118,28 @@ export const createNote = async (noteData: {
 export const updateNote = async (
   id: string, 
   tenantId: string, 
-  updates: { title?: string; content?: string }
+  updates: { title?: string; content?: string },
+  userId?: string
 ): Promise<INote | null> => {
   await connectDB();
+  const query: any = { _id: id, tenantId };
+  if (userId) {
+    query.userId = userId;
+  }
   return await Note.findOneAndUpdate(
-    { _id: id, tenantId },
+    query,
     { ...updates, updatedAt: new Date() },
     { new: true }
   ).populate('userId', 'email');
 };
 
-export const deleteNote = async (id: string, tenantId: string): Promise<boolean> => {
+export const deleteNote = async (id: string, tenantId: string, userId?: string): Promise<boolean> => {
   await connectDB();
-  const result = await Note.deleteOne({ _id: id, tenantId });
+  const query: any = { _id: id, tenantId };
+  if (userId) {
+    query.userId = userId;
+  }
+  const result = await Note.deleteOne(query);
   return result.deletedCount > 0;
 };
 
@@ -135,4 +155,79 @@ export const upgradeTenant = async (slug: string): Promise<ITenant | null> => {
 export const getNoteCountByTenant = async (tenantId: string): Promise<number> => {
   await connectDB();
   return await Note.countDocuments({ tenantId });
+};
+
+export const getNoteCountByUser = async (userId: string, tenantId: string): Promise<number> => {
+  await connectDB();
+  return await Note.countDocuments({ userId, tenantId });
+};
+
+// User management functions
+export const getUsersByTenantId = async (tenantId: string): Promise<IUser[]> => {
+  await connectDB();
+  return await User.find({ tenantId }).select('-password');
+};
+
+export const getUserById = async (id: string, tenantId: string): Promise<IUser | null> => {
+  await connectDB();
+  return await User.findOne({ _id: id, tenantId }).select('-password');
+};
+
+export const createUser = async (userData: {
+  email: string;
+  password: string;
+  role: 'admin' | 'member';
+  tenantId: string;
+}): Promise<IUser> => {
+  await connectDB();
+  const hashedPassword = bcrypt.hashSync(userData.password, 10);
+  const user = new User({
+    ...userData,
+    password: hashedPassword
+  });
+  return await user.save();
+};
+
+export const updateUser = async (
+  id: string, 
+  tenantId: string, 
+  updates: { email?: string; role?: string; password?: string }
+): Promise<IUser | null> => {
+  await connectDB();
+  
+  const updateData: any = { ...updates };
+  if (updates.password) {
+    updateData.password = bcrypt.hashSync(updates.password, 10);
+  }
+  
+  return await User.findOneAndUpdate(
+    { _id: id, tenantId },
+    updateData,
+    { new: true }
+  ).select('-password');
+};
+
+export const deleteUser = async (id: string, tenantId: string): Promise<boolean> => {
+  await connectDB();
+  const result = await User.deleteOne({ _id: id, tenantId });
+  return result.deletedCount > 0;
+};
+
+// Tenant management functions
+export const createTenant = async (tenantData: {
+  name: string;
+  slug: string;
+  plan: string;
+  noteLimit: number;
+  createdAt: Date;
+  updatedAt: Date;
+}): Promise<ITenant | null> => {
+  await connectDB();
+  try {
+    const tenant = new Tenant(tenantData);
+    return await tenant.save();
+  } catch (error) {
+    console.error('Error creating tenant:', error);
+    return null;
+  }
 };

@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import CreateNote from '@/components/CreateNote';
 import NotesList from '@/components/NotesList';
+import UserManagement from '@/components/UserManagement';
+import SubscriptionStatus from '@/components/SubscriptionStatus';
 
 interface User {
   id: string;
@@ -17,6 +19,12 @@ export default function DashboardPage() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [upgrading, setUpgrading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'notes' | 'users' | 'subscription'>('notes');
+  const [subscriptionData, setSubscriptionData] = useState<{
+    noteCount: number;
+    noteLimit: number;
+    isProPlan: boolean;
+  }>({ noteCount: 0, noteLimit: 3, isProPlan: false });
   const router = useRouter();
 
   useEffect(() => {
@@ -31,6 +39,12 @@ export default function DashboardPage() {
     setUser(JSON.parse(userData));
   }, [router]);
 
+  useEffect(() => {
+    if (user) {
+      fetchSubscriptionData();
+    }
+  }, [user]);
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -39,6 +53,39 @@ export default function DashboardPage() {
 
   const handleNoteCreated = () => {
     setRefreshTrigger(prev => prev + 1);
+    // Update subscription data after note creation
+    fetchSubscriptionData();
+  };
+
+  const fetchSubscriptionData = async () => {
+    if (!user) return;
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      // Fetch tenant info
+      const tenantResponse = await fetch(`/api/tenants/${user.tenantSlug}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      // Fetch user's note count
+      const notesResponse = await fetch('/api/notes', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (tenantResponse.ok && notesResponse.ok) {
+        const tenantData = await tenantResponse.json();
+        const notesData = await notesResponse.json();
+        
+        setSubscriptionData({
+          noteCount: notesData.notes.length,
+          noteLimit: tenantData.tenant.noteLimit,
+          isProPlan: tenantData.tenant.plan === 'pro'
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching subscription data:', error);
+    }
   };
 
   const handleLimitReached = () => {
@@ -61,6 +108,8 @@ export default function DashboardPage() {
       if (response.ok) {
         setShowUpgrade(false);
         alert('Successfully upgraded to Pro!');
+        // Refresh the page to update subscription status
+        window.location.reload();
       } else {
         const data = await response.json();
         alert(data.error || 'Upgrade failed');
@@ -70,6 +119,12 @@ export default function DashboardPage() {
     } finally {
       setUpgrading(false);
     }
+  };
+
+  const handleSubscriptionUpgrade = () => {
+    setShowUpgrade(false);
+    // Refresh notes list after upgrade
+    setRefreshTrigger(prev => prev + 1);
   };
 
   if (!user) {
@@ -103,7 +158,7 @@ export default function DashboardPage() {
         </div>
       </nav>
 
-      <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {showUpgrade && user.role === 'admin' && (
           <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-6">
             <div className="flex justify-between items-center">
@@ -125,17 +180,76 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div>
-            <CreateNote 
-              onNoteCreated={handleNoteCreated} 
-              onLimitReached={handleLimitReached}
+        {/* Tab Navigation */}
+        <div className="mb-6">
+          <nav className="flex space-x-8">
+            <button
+              onClick={() => setActiveTab('notes')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'notes'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Notes
+            </button>
+            <button
+              onClick={() => setActiveTab('subscription')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'subscription'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Subscription
+            </button>
+            {user.role === 'admin' && (
+              <button
+                onClick={() => setActiveTab('users')}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'users'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                User Management
+              </button>
+            )}
+          </nav>
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === 'notes' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div>
+              <CreateNote 
+                onNoteCreated={handleNoteCreated} 
+                onLimitReached={handleLimitReached}
+                currentNoteCount={subscriptionData.noteCount}
+                noteLimit={subscriptionData.noteLimit}
+                isProPlan={subscriptionData.isProPlan}
+              />
+            </div>
+            <div>
+              <NotesList refreshTrigger={refreshTrigger} />
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'subscription' && (
+          <div className="max-w-2xl">
+            <SubscriptionStatus 
+              token={localStorage.getItem('token') || ''} 
+              userRole={user.role}
+              tenantSlug={user.tenantSlug}
+              onUpgrade={handleSubscriptionUpgrade}
             />
           </div>
-          <div>
-            <NotesList refreshTrigger={refreshTrigger} />
-          </div>
-        </div>
+        )}
+
+        {activeTab === 'users' && user.role === 'admin' && (
+          <UserManagement token={localStorage.getItem('token') || ''} />
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthFromRequest } from '@/lib/auth';
+import { requireAuth, canUpgradeSubscription } from '@/lib/rbac';
 import { upgradeTenant } from '@/lib/db';
 import { initializeDatabase } from '@/lib/db';
 
@@ -10,12 +10,12 @@ export async function POST(
   try {
     await initializeDatabase();
     
-    const auth = getAuthFromRequest(request);
+    const { auth, response } = requireAuth(request, { requiredRole: 'admin' });
     if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return response!;
     }
 
-    if (auth.role !== 'admin') {
+    if (!canUpgradeSubscription(auth)) {
       return NextResponse.json({ error: 'Forbidden. Admin access required.' }, { status: 403 });
     }
 

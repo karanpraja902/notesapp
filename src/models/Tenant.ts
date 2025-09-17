@@ -29,7 +29,7 @@ const TenantSchema = new Schema<ITenant>({
   },
   noteLimit: {
     type: Number,
-    default: 10 // Free plan limit
+    default: 3// Free plan limit
   }
 }, {
   timestamps: true
@@ -40,7 +40,7 @@ TenantSchema.pre('save', function(next) {
   if (this.plan === 'pro') {
     this.noteLimit = -1; // -1 means unlimited
   } else {
-    this.noteLimit = 10; // Free plan limit
+    this.noteLimit = 3; // Free plan limit
   }
   next();
 });
