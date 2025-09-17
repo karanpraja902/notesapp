@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 // MongoDB connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://karanprajapatug22:gii6sPcPFrQPUI8u@cluster0.e64itoq.mongodb.net/notes';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/multitenantnotesapp';
 
 // Schemas (simplified for setup script)
 const tenantSchema = new mongoose.Schema({
