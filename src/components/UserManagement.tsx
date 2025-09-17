@@ -24,10 +24,6 @@ export default function UserManagement({ token }: UserManagementProps) {
     role: 'member' as 'admin' | 'member'
   });
 
-  useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
-
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
@@ -49,6 +45,10 @@ export default function UserManagement({ token }: UserManagementProps) {
       setLoading(false);
     }
   }, [token]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleInviteUser = async (e: React.FormEvent) => {
     e.preventDefault();

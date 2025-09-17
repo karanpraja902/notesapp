@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { initializeDatabase, createUser, createTenant, getUserByEmail, getTenantBySlug } from '@/lib/db';
 import jwt from 'jsonwebtoken';
-import mongoose from 'mongoose';
+import { Types } from 'mongoose';
 
 // POST /api/auth/signup - Register new organization
 export async function POST(request: NextRequest) {
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
       firstName: adminFirstName || '',
       lastName: adminLastName || '',
       role: 'admin' as const,
-      tenantId: (tenant._id as mongoose.Types.ObjectId).toString(),
+      tenantId: (tenant._id as Types.ObjectId).toString(),
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
     // Generate JWT token
     const token = jwt.sign(
       {
-        userId: (user._id as mongoose.Types.ObjectId).toString(),
+        userId: (user._id as Types.ObjectId).toString(),
         email: user.email,
         role: user.role,
         tenantId: user.tenantId.toString(),
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
       message: 'Organization registered successfully',
       token,
       user: {
-        id: (user._id as mongoose.Types.ObjectId).toString(),
+        id: (user._id as Types.ObjectId).toString(),
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
         tenantSlug: tenant.slug
       },
       organization: {
-        id: (tenant._id as mongoose.Types.ObjectId).toString(),
+        id: (tenant._id as Types.ObjectId).toString(),
         name: tenant.name,
         slug: tenant.slug,
         plan: tenant.plan,

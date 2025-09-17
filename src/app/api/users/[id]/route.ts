@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthFromRequest } from '@/lib/auth';
 import { getUserById, updateUser, deleteUser } from '@/lib/db';
 import { initializeDatabase } from '@/lib/db';
-import mongoose from 'mongoose';
+import { Types } from 'mongoose';
 
 // GET /api/users/[id] - Get user details (Admin only)
 export async function GET(
@@ -29,7 +29,7 @@ export async function GET(
 
     return NextResponse.json({ 
       user: {
-        id: (user._id as mongoose.Types.ObjectId).toString(),
+        id: (user._id as Types.ObjectId).toString(),
         email: user.email,
         role: user.role,
         tenantId: user.tenantId.toString(),
@@ -77,7 +77,7 @@ export async function PUT(
 
     return NextResponse.json({ 
       user: {
-        id: (updatedUser._id as mongoose.Types.ObjectId).toString(),
+        id: (updatedUser._id as Types.ObjectId).toString(),
         email: updatedUser.email,
         role: updatedUser.role,
         tenantId: updatedUser.tenantId.toString()
@@ -86,7 +86,7 @@ export async function PUT(
   } catch (error) {
     console.error('Error updating user:', error);
     
-    if ((error as any).code === 11000) {
+    if ((error as { code?: number }).code === 11000) {
       return NextResponse.json(
         { error: 'User with this email already exists' },
         { status: 409 }

@@ -23,10 +23,6 @@ export default function SubscriptionStatus({ token, userRole, tenantSlug, onUpgr
   const [loading, setLoading] = useState(true);
   const [upgrading, setUpgrading] = useState(false);
 
-  useEffect(() => {
-    fetchSubscriptionData();
-  }, [fetchSubscriptionData]);
-
   const fetchSubscriptionData = useCallback(async () => {
     try {
       setLoading(true);
@@ -60,6 +56,10 @@ export default function SubscriptionStatus({ token, userRole, tenantSlug, onUpgr
       setLoading(false);
     }
   }, [tenantSlug, token]);
+
+  useEffect(() => {
+    fetchSubscriptionData();
+  }, [fetchSubscriptionData]);
 
   const handleUpgrade = async () => {
     if (!tenant || userRole !== 'admin') return;

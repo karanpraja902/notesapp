@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthFromRequest } from '@/lib/auth';
 import { createUser, getUsersByTenantId } from '@/lib/db';
 import { initializeDatabase } from '@/lib/db';
+import { Types } from 'mongoose';
 
 // GET /api/users - List all users in the tenant (Admin only)
 export async function GET(request: NextRequest) {
@@ -67,7 +68,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ 
       user: {
-        id: newUser._id.toString(),
+        id: (newUser._id as Types.ObjectId).toString(),
         email: newUser.email,
         role: newUser.role,
         tenantId: newUser.tenantId.toString()
@@ -76,7 +77,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error creating user:', error);
     
-    if (error.code === 11000) {
+    if ((error as { code?: number }).code === 11000) {
       return NextResponse.json(
         { error: 'User with this email already exists' },
         { status: 409 }
