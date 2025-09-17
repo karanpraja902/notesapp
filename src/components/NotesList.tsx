@@ -172,7 +172,7 @@ console.log("notes", notes);
       </div>
       <div className="grid gap-4">
         {notes.map((note) => (
-          <div key={note._id as string} className="bg-white shadow-sm border border-gray-200 rounded-xl p-6 xl:p-8 hover:shadow-md transition-all duration-200 hover:border-gray-300">
+          <div key={note._id as string} className="bg-white shadow-sm border border-gray-200 rounded-xl p-6 xl:p-8 hover:shadow-md transition-all duration-200 hover:border-gray-300 lg:max-w-xl">
             <div className="flex justify-between items-start">
               <div className="flex-1">
                 <h3 className="font-bold text-lg xl:text-xl text-gray-900 mb-2">{note.title}</h3>

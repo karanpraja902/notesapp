@@ -54,7 +54,7 @@ export default function CreateNote({ onNoteCreated, onLimitReached, currentNoteC
   const isAtLimit = !isProPlan && currentNoteCount >= noteLimit;
 
   return (
-    <div className="bg-white shadow-lg rounded-xl border border-gray-200 p-6 xl:p-8 hover:shadow-xl transition-shadow duration-200 max-w-md xl:max-w-lg">
+    <div className="bg-white shadow-lg rounded-xl border border-gray-200 p-6 xl:p-8 hover:shadow-xl transition-shadow duration-200 ">
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center">
           <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center mr-3">

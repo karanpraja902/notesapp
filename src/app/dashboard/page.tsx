@@ -143,81 +143,93 @@ export default function DashboardPage() {
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden"
+          className="fixed inset-0 z-40 bg-gray-600/75 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <div className='flex'>
-      <div className={` fixed inset-y-0 left-0 z-50 w-64 xl:w-80 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}>
-        <div className="flex items-center justify-center h-16 px-4 bg-gradient-to-r from-blue-600 to-indigo-600">
+      <div className={`lg:flex`}>
+       {sidebarOpen && <div className={` fixed inset-y-0 left-0 z-50 w-64 lg:w-64 xl:w-80 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:static lg:inset-0 translate-x-0 flex flex-col ${
+         sidebarOpen ? 'translate-x-0  ' : '-translate-x-full'
+       }`}>
+        <div className="flex items-center justify-between h-16 px-4 bg-gradient-to-r from-blue-600 to-indigo-600">
           <h1 className="text-xl xl:text-2xl font-bold text-white">Notes App</h1>
-        </div>
-        
-        <div className="px-4 py-6">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="w-10 h-10 xl:w-12 xl:h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-semibold text-sm xl:text-base">
-                {user.email.charAt(0).toUpperCase()}
-              </span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm xl:text-base font-medium text-gray-900 truncate">{user.email}</p>
-              <div className="flex space-x-2 mt-1">
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs xl:text-sm font-medium bg-blue-100 text-blue-800">
-                  {user.tenantSlug.toUpperCase()}
-                </span>
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs xl:text-sm font-medium bg-gray-100 text-gray-800">
-                  {user.role.toUpperCase()}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <nav className="space-y-2">
-            {navigation.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  setActiveTab(item.id as 'notes' | 'users' | 'subscription' | 'overview');
-                  setSidebarOpen(false);
-                }}
-                className={`w-full flex items-center px-3 py-2 xl:py-3 text-sm xl:text-base font-medium rounded-lg transition-colors duration-200 ${
-                  activeTab === item.id
-                    ? 'bg-blue-100 text-blue-700 border-r-2 border-blue-600'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                }`}
-              >
-                <span className="mr-3 text-lg xl:text-xl">{item.icon}</span>
-                {item.name}
-              </button>
-            ))}
-          </nav>
-        </div>
-
-        <div className="absolute bottom-0 w-full p-4">
           <button
-            onClick={handleLogout}
-            className="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors duration-200"
+            onClick={() => setSidebarOpen(false)}
+            className="lg:block hidden p-1 rounded-md text-white hover:bg-blue-700 transition-colors"
           >
-            <span className="mr-2">🚪</span>
-            Logout
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
-      </div>
+        
+         <div className="flex-1 px-4 py-6 overflow-y-auto">
+           <div className="flex items-center space-x-3 mb-6">
+             <div className="w-10 h-10 xl:w-12 xl:h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+               <span className="text-white font-semibold text-sm xl:text-base">
+                 {user.email.charAt(0).toUpperCase()}
+               </span>
+             </div>
+             <div className="flex-1 min-w-0">
+               <p className="text-sm xl:text-base font-medium text-gray-900 truncate">{user.email}</p>
+               <div className="flex space-x-2 mt-1">
+                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs xl:text-sm font-medium bg-blue-100 text-blue-800">
+                   {user.tenantSlug.toUpperCase()}
+                 </span>
+                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs xl:text-sm font-medium bg-gray-100 text-gray-800">
+                   {user.role.toUpperCase()}
+                 </span>
+               </div>
+             </div>
+           </div>
+
+           <nav className="space-y-2">
+             {navigation.map((item) => (
+               <button
+                 key={item.id}
+                 onClick={() => {
+                   setActiveTab(item.id as 'notes' | 'users' | 'subscription' | 'overview');
+                   // Only auto-close sidebar on mobile
+                   if (window.innerWidth < 1024) {
+                     setSidebarOpen(false);
+                   }
+                 }}
+                 className={`w-full flex items-center px-3 py-2 xl:py-3 text-sm xl:text-base font-medium rounded-lg transition-colors duration-200 ${
+                   activeTab === item.id
+                     ? 'bg-blue-100 text-blue-700 border-r-2 border-blue-600'
+                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                 }`}
+               >
+                 <span className="mr-3 text-lg xl:text-xl">{item.icon}</span>
+                 {item.name}
+               </button>
+             ))}
+           </nav>
+         </div>
+
+         <div className="p-4 border-t border-gray-200">
+           <button
+             onClick={handleLogout}
+             className="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors duration-200"
+           >
+             <span className="mr-2">🚪</span>
+             Logout
+           </button>
+         </div>
+      </div>}
 
       {/* Main content */}
-      <div className={` `}>
+      <div className={`flex-1 transition-all duration-300`}>
         {/* Top bar */}
         <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-200">
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <button
-                onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                title={sidebarOpen ? "Close sidebar" : "Open sidebar"}
               >
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -409,8 +421,11 @@ export default function DashboardPage() {
           )}
 
           {activeTab === 'notes' && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
-              <div className="lg:col-span-1 xl:col-span-1 2xl:col-span-1">
+<div className='lg:max-w-7xl mx-auto'>
+
+
+            <div className="flex flex-col lg:flex-row gap-8">
+              <div className="lg:col-span-1 xl:col-span-1 2xl:col-span-1 lg:max-w-xl">
                 <CreateNote 
                   onNoteCreated={handleNoteCreated} 
                   onLimitReached={handleLimitReached}
@@ -422,6 +437,7 @@ export default function DashboardPage() {
               <div className="lg:col-span-1 xl:col-span-2 2xl:col-span-3">
                 <NotesList refreshTrigger={refreshTrigger} />
               </div>
+            </div>
             </div>
           )}
 
