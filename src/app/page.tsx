@@ -130,7 +130,7 @@ export default function HomePage() {
                 </div>
                 <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Multi-Tenant Architecture</p>
                 <p className="mt-2 ml-16 text-base text-gray-500">
-                  Complete tenant isolation ensuring your organization's data is secure and separate from others.
+                  Complete tenant isolation ensuring your organization&apos;s data is secure and separate from others.
                 </p>
               </div>
 

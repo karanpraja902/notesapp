@@ -1,0 +1,53 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e5]:
+        - heading "Notes SaaS" [level=1] [ref=e7]
+        - generic [ref=e8]:
+          - link "Sign In" [ref=e9] [cursor=pointer]:
+            - /url: /login
+          - link "Get Started" [ref=e10] [cursor=pointer]:
+            - /url: /signup
+    - generic [ref=e12]:
+      - heading "Multi-Tenant Notes SaaS" [level=1] [ref=e13]:
+        - generic [ref=e14]: Multi-Tenant
+        - generic [ref=e15]: Notes SaaS
+      - paragraph [ref=e16]: A secure, scalable notes application for organizations. Create, manage, and collaborate on notes with role-based access control and subscription management.
+      - generic [ref=e17]:
+        - link "Start Free Trial" [ref=e19] [cursor=pointer]:
+          - /url: /signup
+        - link "Sign In" [ref=e21] [cursor=pointer]:
+          - /url: /login
+    - generic [ref=e23]:
+      - generic [ref=e24]:
+        - heading "Features" [level=2] [ref=e25]
+        - paragraph [ref=e26]: Everything you need for team collaboration
+      - generic [ref=e28]:
+        - generic [ref=e29]:
+          - img [ref=e31]
+          - paragraph [ref=e33]: Secure Notes Management
+          - paragraph [ref=e34]: Create, edit, and organize notes with full CRUD operations and user-specific access control.
+        - generic [ref=e35]:
+          - img [ref=e37]
+          - paragraph [ref=e39]: Role-Based Access Control
+          - paragraph [ref=e40]: Admin and Member roles with different permissions. Admins can manage users and upgrade subscriptions.
+        - generic [ref=e41]:
+          - img [ref=e43]
+          - paragraph [ref=e45]: Multi-Tenant Architecture
+          - paragraph [ref=e46]: Complete tenant isolation ensuring your organization's data is secure and separate from others.
+        - generic [ref=e47]:
+          - img [ref=e49]
+          - paragraph [ref=e51]: Subscription Management
+          - paragraph [ref=e52]: Free plan with 3 notes per user, Pro plan with unlimited notes. Easy upgrade process for admins.
+    - generic [ref=e54]:
+      - heading "Ready to get started? Create your organization today." [level=2] [ref=e55]:
+        - generic [ref=e56]: Ready to get started?
+        - generic [ref=e57]: Create your organization today.
+      - paragraph [ref=e58]: Join thousands of organizations already using our secure notes platform.
+      - link "Get started for free" [ref=e59] [cursor=pointer]:
+        - /url: /signup
+  - alert [ref=e60]
+```

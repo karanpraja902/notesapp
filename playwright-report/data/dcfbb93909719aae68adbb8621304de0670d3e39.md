@@ -1,0 +1,79 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - heading "Notes App" [level=1] [ref=e5]
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - generic [ref=e9]: T
+          - generic [ref=e10]:
+            - paragraph [ref=e11]: test@example.com
+            - generic [ref=e12]:
+              - generic [ref=e13]: TEST-TENANT
+              - generic [ref=e14]: MEMBER
+        - navigation [ref=e15]:
+          - button "📊 Overview" [ref=e16]:
+            - generic [ref=e17]: 📊
+            - text: Overview
+          - button "📝 Notes" [ref=e18]:
+            - generic [ref=e19]: 📝
+            - text: Notes
+          - button "💳 Subscription" [ref=e20]:
+            - generic [ref=e21]: 💳
+            - text: Subscription
+      - button "🚪 Logout" [ref=e23]:
+        - generic [ref=e24]: 🚪
+        - text: Logout
+    - generic [ref=e25]:
+      - generic [ref=e28]:
+        - heading "overview" [level=2] [ref=e30]
+        - generic [ref=e32]: Welcome back, test
+      - main [ref=e33]:
+        - generic [ref=e34]:
+          - generic [ref=e35]:
+            - generic [ref=e37]:
+              - generic [ref=e40]: 📝
+              - generic [ref=e41]:
+                - paragraph [ref=e42]: Total Notes
+                - paragraph [ref=e43]: "0"
+            - generic [ref=e45]:
+              - generic [ref=e48]: 💳
+              - generic [ref=e49]:
+                - paragraph [ref=e50]: Plan
+                - paragraph [ref=e51]: Free
+            - generic [ref=e53]:
+              - generic [ref=e56]: 📊
+              - generic [ref=e57]:
+                - paragraph [ref=e58]: Usage
+                - paragraph [ref=e59]: 0/3
+            - generic [ref=e61]:
+              - generic [ref=e64]: 👤
+              - generic [ref=e65]:
+                - paragraph [ref=e66]: Role
+                - paragraph [ref=e67]: member
+          - generic [ref=e68]:
+            - heading "Quick Actions" [level=3] [ref=e69]
+            - generic [ref=e70]:
+              - button "📝 Create Note Add a new note" [ref=e71]:
+                - generic [ref=e72]: 📝
+                - generic [ref=e73]:
+                  - paragraph [ref=e74]: Create Note
+                  - paragraph [ref=e75]: Add a new note
+              - button "💳 Subscription Manage your plan" [ref=e76]:
+                - generic [ref=e77]: 💳
+                - generic [ref=e78]:
+                  - paragraph [ref=e79]: Subscription
+                  - paragraph [ref=e80]: Manage your plan
+          - generic [ref=e81]:
+            - generic [ref=e82]:
+              - heading "Recent Notes" [level=3] [ref=e83]
+              - button "View all →" [ref=e84]
+            - generic [ref=e85]:
+              - img [ref=e86]
+              - generic [ref=e88]: Unauthorized
+  - button "Open Next.js Dev Tools" [ref=e94] [cursor=pointer]:
+    - img [ref=e95] [cursor=pointer]
+  - alert [ref=e98]
+```

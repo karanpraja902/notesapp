@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthFromRequest } from './auth';
+import { getAuthFromRequest, AuthResult } from './auth';
 
 export type UserRole = 'admin' | 'member';
 
@@ -18,7 +18,7 @@ export interface RBACOptions {
 export function requireAuth(
   request: NextRequest, 
   options: RBACOptions = {}
-): { auth: any; response?: NextResponse } | { auth: null; response: NextResponse } {
+): { auth: AuthResult; response?: NextResponse } | { auth: null; response: NextResponse } {
   const auth = getAuthFromRequest(request);
   
   if (!auth) {
@@ -59,34 +59,34 @@ export function requireAuth(
 /**
  * Check if user has admin role
  */
-export function isAdmin(auth: any): boolean {
+export function isAdmin(auth: AuthResult): boolean {
   return auth?.role === 'admin';
 }
 
 /**
  * Check if user has member role or higher
  */
-export function isMember(auth: any): boolean {
+export function isMember(auth: AuthResult): boolean {
   return auth?.role === 'member' || auth?.role === 'admin';
 }
 
 /**
  * Check if user can manage users (admin only)
  */
-export function canManageUsers(auth: any): boolean {
+export function canManageUsers(auth: AuthResult): boolean {
   return isAdmin(auth);
 }
 
 /**
  * Check if user can upgrade subscriptions (admin only)
  */
-export function canUpgradeSubscription(auth: any): boolean {
+export function canUpgradeSubscription(auth: AuthResult): boolean {
   return isAdmin(auth);
 }
 
 /**
  * Check if user can manage notes (all authenticated users)
  */
-export function canManageNotes(auth: any): boolean {
+export function canManageNotes(auth: AuthResult): boolean {
   return isMember(auth);
 }

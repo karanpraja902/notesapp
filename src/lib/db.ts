@@ -97,7 +97,7 @@ export const getNotesByUserId = async (userId: string, tenantId: string): Promis
 
 export const getNoteById = async (id: string, tenantId: string, userId?: string): Promise<INote | null> => {
   await connectDB();
-  const query: any = { _id: id, tenantId };
+  const query: Record<string, string> = { _id: id, tenantId };
   if (userId) {
     query.userId = userId;
   }
@@ -122,7 +122,7 @@ export const updateNote = async (
   userId?: string
 ): Promise<INote | null> => {
   await connectDB();
-  const query: any = { _id: id, tenantId };
+  const query: Record<string, string> = { _id: id, tenantId };
   if (userId) {
     query.userId = userId;
   }
@@ -135,7 +135,7 @@ export const updateNote = async (
 
 export const deleteNote = async (id: string, tenantId: string, userId?: string): Promise<boolean> => {
   await connectDB();
-  const query: any = { _id: id, tenantId };
+  const query: Record<string, string> = { _id: id, tenantId };
   if (userId) {
     query.userId = userId;
   }
@@ -195,7 +195,7 @@ export const updateUser = async (
 ): Promise<IUser | null> => {
   await connectDB();
   
-  const updateData: any = { ...updates };
+  const updateData: Record<string, string> = { ...updates };
   if (updates.password) {
     updateData.password = bcrypt.hashSync(updates.password, 10);
   }

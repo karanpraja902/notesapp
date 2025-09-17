@@ -10,7 +10,7 @@ export const generateToken = (payload: AuthToken): string => {
 export const verifyToken = (token: string): AuthToken | null => {
   try {
     return jwt.verify(token, JWT_SECRET) as AuthToken;
-  } catch (error) {
+  } catch {
     return null;
   }
 };

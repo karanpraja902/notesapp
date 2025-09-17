@@ -94,8 +94,8 @@ export async function POST(request: NextRequest) {
       password: adminPassword, // Pass plain password - createUser will hash it
       firstName: adminFirstName || '',
       lastName: adminLastName || '',
-      role: 'admin',
-      tenantId: tenant._id,
+      role: 'admin' as const,
+      tenantId: (tenant._id as mongoose.Types.ObjectId).toString(),
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
     // Generate JWT token
     const token = jwt.sign(
       {
-        userId: user._id.toString(),
+        userId: (user._id as mongoose.Types.ObjectId).toString(),
         email: user.email,
         role: user.role,
         tenantId: user.tenantId.toString(),
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
       message: 'Organization registered successfully',
       token,
       user: {
-        id: user._id.toString(),
+        id: (user._id as mongoose.Types.ObjectId).toString(),
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
         tenantSlug: tenant.slug
       },
       organization: {
-        id: tenant._id.toString(),
+        id: (tenant._id as mongoose.Types.ObjectId).toString(),
         name: tenant.name,
         slug: tenant.slug,
         plan: tenant.plan,

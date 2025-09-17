@@ -52,7 +52,7 @@ export const users: User[] = [
   }
 ];
 
-export let notes: Note[] = [];
+export const notes: Note[] = [];
 
 // Helper functions
 export const getUserByEmail = (email: string): User | undefined => {

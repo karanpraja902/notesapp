@@ -5,7 +5,7 @@ import { initializeDatabase } from '@/lib/db';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     await initializeDatabase();
@@ -19,11 +19,12 @@ export async function POST(
       return NextResponse.json({ error: 'Forbidden. Admin access required.' }, { status: 403 });
     }
 
-    if (auth.tenantSlug !== params.slug) {
+    const { slug } = await params;
+    if (auth.tenantSlug !== slug) {
       return NextResponse.json({ error: 'Cannot upgrade other tenants' }, { status: 403 });
     }
 
-    const updatedTenant = await upgradeTenant(params.slug);
+    const updatedTenant = await upgradeTenant(slug);
     if (!updatedTenant) {
       return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
     }

@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthFromRequest } from '@/lib/auth';
 import { createUser, getUsersByTenantId } from '@/lib/db';
 import { initializeDatabase } from '@/lib/db';
-import bcrypt from 'bcryptjs';
 
 // GET /api/users - List all users in the tenant (Admin only)
 export async function GET(request: NextRequest) {

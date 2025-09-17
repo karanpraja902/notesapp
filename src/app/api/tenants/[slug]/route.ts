@@ -6,7 +6,7 @@ import { initializeDatabase } from '@/lib/db';
 // GET /api/tenants/[slug] - Get tenant information
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     await initializeDatabase();
@@ -16,12 +16,13 @@ export async function GET(
       return response!;
     }
 
+    const { slug } = await params;
     // Users can only access their own tenant
-    if (auth.tenantSlug !== params.slug) {
+    if (auth.tenantSlug !== slug) {
       return NextResponse.json({ error: 'Forbidden. Cannot access other tenants.' }, { status: 403 });
     }
 
-    const tenant = await getTenantBySlug(params.slug);
+    const tenant = await getTenantBySlug(slug);
     if (!tenant) {
       return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
     }

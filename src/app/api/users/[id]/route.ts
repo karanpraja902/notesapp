@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthFromRequest } from '@/lib/auth';
 import { getUserById, updateUser, deleteUser } from '@/lib/db';
 import { initializeDatabase } from '@/lib/db';
+import mongoose from 'mongoose';
 
 // GET /api/users/[id] - Get user details (Admin only)
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await initializeDatabase();
@@ -20,14 +21,15 @@ export async function GET(
       return NextResponse.json({ error: 'Forbidden. Admin access required.' }, { status: 403 });
     }
 
-    const user = await getUserById(params.id, auth.tenantId);
+    const { id } = await params;
+    const user = await getUserById(id, auth.tenantId);
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     return NextResponse.json({ 
       user: {
-        id: user._id.toString(),
+        id: (user._id as mongoose.Types.ObjectId).toString(),
         email: user.email,
         role: user.role,
         tenantId: user.tenantId.toString(),
@@ -46,7 +48,7 @@ export async function GET(
 // PUT /api/users/[id] - Update user (Admin only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await initializeDatabase();
@@ -60,21 +62,22 @@ export async function PUT(
       return NextResponse.json({ error: 'Forbidden. Admin access required.' }, { status: 403 });
     }
 
+    const { id } = await params;
     const { email, role, password } = await request.json();
 
-    const updates: any = {};
+    const updates: Record<string, string> = {};
     if (email) updates.email = email;
     if (role && ['admin', 'member'].includes(role)) updates.role = role;
     if (password) updates.password = password;
 
-    const updatedUser = await updateUser(params.id, auth.tenantId, updates);
+    const updatedUser = await updateUser(id, auth.tenantId, updates);
     if (!updatedUser) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     return NextResponse.json({ 
       user: {
-        id: updatedUser._id.toString(),
+        id: (updatedUser._id as mongoose.Types.ObjectId).toString(),
         email: updatedUser.email,
         role: updatedUser.role,
         tenantId: updatedUser.tenantId.toString()
@@ -83,7 +86,7 @@ export async function PUT(
   } catch (error) {
     console.error('Error updating user:', error);
     
-    if (error.code === 11000) {
+    if ((error as any).code === 11000) {
       return NextResponse.json(
         { error: 'User with this email already exists' },
         { status: 409 }
@@ -100,7 +103,7 @@ export async function PUT(
 // DELETE /api/users/[id] - Delete user (Admin only)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await initializeDatabase();
@@ -114,15 +117,17 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden. Admin access required.' }, { status: 403 });
     }
 
+    const { id } = await params;
+    
     // Prevent admin from deleting themselves
-    if (params.id === auth.userId) {
+    if (id === auth.userId) {
       return NextResponse.json(
         { error: 'Cannot delete your own account' },
         { status: 400 }
       );
     }
 
-    const success = await deleteUser(params.id, auth.tenantId);
+    const success = await deleteUser(id, auth.tenantId);
     if (!success) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }

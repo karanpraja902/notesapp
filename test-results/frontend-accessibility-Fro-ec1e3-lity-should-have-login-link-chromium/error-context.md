@@ -1,0 +1,46 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e4]:
+      - heading "Create Your Organization" [level=2] [ref=e5]
+      - paragraph [ref=e6]:
+        - text: Or
+        - link "sign in to your existing account" [ref=e7] [cursor=pointer]:
+          - /url: /login
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - heading "Organization Information" [level=3] [ref=e12]
+        - generic [ref=e13]:
+          - generic [ref=e14]: Organization Name *
+          - textbox "Organization Name *" [ref=e16]
+        - generic [ref=e17]:
+          - generic [ref=e18]: Organization URL *
+          - generic [ref=e19]:
+            - generic [ref=e20]: notesapp.com/
+            - textbox "Organization URL *" [ref=e21]
+          - paragraph [ref=e22]: This will be your organization's unique URL. Only lowercase letters, numbers, and hyphens are allowed.
+      - generic [ref=e23]:
+        - heading "Admin Account" [level=3] [ref=e24]
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - generic [ref=e27]: First Name
+            - textbox "First Name" [ref=e29]
+          - generic [ref=e30]:
+            - generic [ref=e31]: Last Name
+            - textbox "Last Name" [ref=e33]
+        - generic [ref=e34]:
+          - generic [ref=e35]: Email Address *
+          - textbox "Email Address *" [ref=e37]
+        - generic [ref=e38]:
+          - generic [ref=e39]: Password *
+          - textbox "Password *" [ref=e41]
+        - generic [ref=e42]:
+          - generic [ref=e43]: Confirm Password *
+          - textbox "Confirm Password *" [ref=e45]
+      - button "Create Organization" [ref=e47]
+  - button "Open Next.js Dev Tools" [ref=e53] [cursor=pointer]:
+    - img [ref=e54] [cursor=pointer]
+  - alert [ref=e57]
+```

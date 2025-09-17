@@ -123,7 +123,7 @@ export default function SignupPage() {
       } else {
         setError(data.error || 'Registration failed');
       }
-    } catch (err) {
+    } catch {
       setError('Network error. Please try again.');
     } finally {
       setLoading(false);
@@ -224,7 +224,7 @@ export default function SignupPage() {
                   />
                 </div>
                 <p className="mt-1 text-xs text-gray-500">
-                  This will be your organization's unique URL. Only lowercase letters, numbers, and hyphens are allowed.
+                  This will be your organization&apos;s unique URL. Only lowercase letters, numbers, and hyphens are allowed.
                 </p>
               </div>
             </div>

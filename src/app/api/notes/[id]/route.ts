@@ -5,7 +5,7 @@ import { initializeDatabase } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await initializeDatabase();
@@ -19,7 +19,8 @@ export async function GET(
       return NextResponse.json({ error: 'Forbidden. Insufficient permissions.' }, { status: 403 });
     }
 
-    const note = await getNoteById(params.id, auth.tenantId, auth.userId);
+    const { id } = await params;
+    const note = await getNoteById(id, auth.tenantId, auth.userId);
     if (!note) {
       return NextResponse.json({ error: 'Note not found' }, { status: 404 });
     }
@@ -36,7 +37,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await initializeDatabase();
@@ -50,6 +51,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Forbidden. Insufficient permissions.' }, { status: 403 });
     }
 
+    const { id } = await params;
     const { title, content } = await request.json();
 
     if (!title || !content) {
@@ -59,7 +61,7 @@ export async function PUT(
       );
     }
 
-    const updatedNote = await updateNote(params.id, auth.tenantId, { title, content }, auth.userId);
+    const updatedNote = await updateNote(id, auth.tenantId, { title, content }, auth.userId);
     if (!updatedNote) {
       return NextResponse.json({ error: 'Note not found' }, { status: 404 });
     }
@@ -76,7 +78,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await initializeDatabase();
@@ -90,7 +92,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden. Insufficient permissions.' }, { status: 403 });
     }
 
-    const success = await deleteNote(params.id, auth.tenantId, auth.userId);
+    const { id } = await params;
+    const success = await deleteNote(id, auth.tenantId, auth.userId);
     if (!success) {
       return NextResponse.json({ error: 'Note not found' }, { status: 404 });
     }
